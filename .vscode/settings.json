@@ -1,0 +1,9 @@
+{
+    "deno.enable": false,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "tslint.enable": false,
+    "javascript.validate.enable": false,
+    "editor.minimap.enabled": false
+}
