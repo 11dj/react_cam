@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-// import './App.css';
-import CustomCamera from './CustomCam';
+import React, { useRef, useState, useCallback } from 'react';
+import './App.css';
+import CustomCam from './CustomCam';
 
 function App() {
   const [isMrror, setIsMirror] = useState(false)
+  const [getImage, setImage] = useState(null)
   const [camData, setCamData] = useState({
     currentIndex: 0,
     list: [],
@@ -11,21 +12,18 @@ function App() {
   const getC = useCallback((a) => setCamData(a), [setCamData]) 
   const updateM = () => isMrror ? setIsMirror(false) : setIsMirror(true)
 
-  const handleChangeCam = (val) => {
-    let ax = camData
-    ax.currentIndex = Number(val)
-    console.log(ax)
-    setCamData(ax)
+  const CustomCamRef = useRef();
+
+  const handleCapture = () => {
+    let t = CustomCamRef.current.getSnap('snap-div')
+    setImage(t)
   }
 
-  useEffect(()=> {
-    if (camData.list.length !== 0) console.log(camData)
-  }, [camData])
   return (
     <div id='App'>
+      <button onClick={() => handleCapture()}>Capture</button>
       <button onClick={() => updateM()}> Mirror : {isMrror.toString() }</button>
       <div>
-          {/* <select value={camData.currentIndex} onChange={(e) => handleChangeCam(e.target.value)}> */}
           <select value={camData.currentIndex} onChange={(e) => setCamData({currentIndex: Number(e.target.value), list: camData.list})}>
             {
               camData.list.map((ea_device,i) => (
@@ -34,14 +32,17 @@ function App() {
             }
           </select>
         </div>
-      <CustomCamera
+      <CustomCam
+        ref={CustomCamRef}
         getCamData={getC}
         currentIndex={camData.currentIndex}
         mirror={isMrror}
-        width={1280}
-        height={720}
-        // onChangeCamer(e)=> console.log(e)a={}
+        width={1024}
+        height={576}
       />
+      <canvas className='snap-div' id='snap-div'/>
+      <img className='img-div' src={getImage} alt=""/>
+      
     </div>
     
   );
