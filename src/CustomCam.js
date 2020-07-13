@@ -102,14 +102,8 @@ const CustomCamera = forwardRef(
           video.play();
         });
       }
-      // if (currentIndex && currentIndex !== deviceId && !isInit) {
-      //   updateVideo(deviceList[currentIndex].deviceId)
-      //   setDeviceId(currentIndex)
-      // } 
-      console.log('kk' + deviceId + isInit)
       if (deviceId !== null && !isInit) {
         updateVideo(deviceList[deviceId].deviceId)
-        // setDeviceId(deviceId)
       } 
     }, [isInit, deviceId, deviceList])
     useEffect(() => {
