@@ -5,21 +5,20 @@ const useStyles = makeStyles(() => ({
   root: {
     position: 'relative',
     height: '100%',
-    width: '100%'
+    width: 'auto'
   },
   container: {
     position: 'absolute',
     top: '0',
     bottom: '0',
-    width: '100%',
-    height: '100%', 
+    width: 'auto !important',
+    // height: '100% !important', 
     overflow: 'hidden',
   },
   video: {
     minWidth: '100%',
     minHeight: '100%',
-    width: 'auto',
-    height: 'auto',
+    width: '100%',
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -110,7 +109,15 @@ const CustomCamera = forwardRef(
       const launchVideo = async () => {
         const video = document.getElementById('inputVideo');
         let videoV = document.getElementById('custom-cam-video-container');
-        if (height && width) video.style.cssText = videoV.style.cssText = `height: ${height}px !important; width: ${width}px !important`
+        if (height && width) {
+          // for mobile
+          if (height > width) videoV.style.cssText = `width: auto !important`
+          // for desktop
+          else video.style.cssText = `width: auto !important`
+          videoV.style.cssText = `height: ${height}px !important; width: ${width}px !important`
+          // videoV.style.cssText = `height: ${height}px !important; width: ${width}px !important`
+          // video.style.cssText = videoV.style.cssText = `height: ${height}px !important; width: ${width}px !important`
+      }
         navigator.getMedia = (navigator.getUserMedia);
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           const constraints = {
@@ -124,9 +131,11 @@ const CustomCamera = forwardRef(
           const listDevicesX =  await navigator.mediaDevices.enumerateDevices();
           const listDevices = await listDevicesX.filter(ea => ea.kind === 'videoinput')
           setDeviceList(listDevices)
-          // setDeviceId(listDevices.length-1)
+          let currentDevice = stream.getTracks()
+          const currentDeviceX = listDevices.filter(ea => ea.label === currentDevice[0].label)[0]
+          const currentIndex = listDevices.indexOf(currentDeviceX)
           getCamData({
-            currentIndex: listDevices.length-1,
+            currentIndex,
             list: listDevices,
             size: [videoV?.clientWidth, videoV?.clientHeight]
           })
