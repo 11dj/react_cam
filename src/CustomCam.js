@@ -19,6 +19,7 @@ const useStyles = makeStyles(() => ({
     minWidth: '100%',
     minHeight: '100%',
     width: '100%',
+    height: '100%',
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -111,7 +112,7 @@ const CustomCamera = forwardRef(
         let videoV = document.getElementById('custom-cam-video-container');
         if (height && width) {
           // for mobile
-          if (height > width) videoV.style.cssText = `width: auto !important`
+          if (height > width) video.style.cssText = `width: auto !important`
           // for desktop
           else video.style.cssText = `width: auto !important`
           videoV.style.cssText = `height: ${height}px !important; width: ${width}px !important`
