@@ -3,7 +3,6 @@ html, body { height: 100% }
 #App {
   position: relative;
   background: red;
-  /* width: 100vw; */
   width: calc(var(--vw, 1vw) * 100);
   height: calc(var(--vh, 1vh) * 100);
 }
@@ -13,14 +12,6 @@ html, body { height: 100% }
   right: 10px;
   z-index: 10;
 }
-/* 
-.img-div {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  height: 30%;
-  width: 30%;
-} */
 .canvas-div {
   position: absolute;
   right: 10px;
