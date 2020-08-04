@@ -67,7 +67,7 @@ function App() {
   } ,[])
   
   const getInfoClient = (type) => {
-    if (type === 'OS') {
+    if (type === 'platform') {
       return navigator.platform
     } else if (type === 'browser') {
       return (() => {
@@ -102,12 +102,12 @@ function App() {
     <div>your browser is not available</div>
     <div> please try again </div>
     <div>for Mac and Windows, use Chrome only</div>
-    <div>for iPhone, use Safari only</div>
+    <div>for iPhone, iPad, use Safari only</div>
     <div>for Android, use Chrome only</div>
   </div>)
 
   const checkAvailable = (info) => {
-    if (getInfoClient('OS') === 'iPhone' && getInfoClient('browser') === 'Chrome') return false
+    if ((getInfoClient('platform') === 'iPhone' || getInfoClient('platform') === 'iPad')  && getInfoClient('browser') === 'Chrome') return false
     else return true
   }
 
