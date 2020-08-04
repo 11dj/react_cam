@@ -126,7 +126,7 @@ function App() {
           </select>
       </div>
       <div className='info-div'>
-        <div>OS : {getInfoClient('OS')}</div>
+        <div>Platform : {getInfoClient('platform')}</div>
         <div>Browser : {getInfoClient('browser')}</div>
       </div>
       <div>
