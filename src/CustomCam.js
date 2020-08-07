@@ -57,19 +57,48 @@ const CustomCamera = forwardRef(
         const base64 = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"); 
         return { base64, size: [videoEl.videoWidth, videoEl.videoHeight] }
       },
-      getCanvas(canvasId) {
+      getCanvas(canvasId, dimensions) {
+        // const { width, height } = dimen
+        console.log(`dimensions ${dimensions.width} ${dimensions.height}`)
+        const ratio = dimensions.width/dimensions.height
         let videoEl = document.getElementById('inputVideo')
+        let cropCanvas = ({ x, y, width, height }) => {
+          console.log(x, y, width, height)
+          let destCanvas = document.getElementById(canvasId)
+          destCanvas.width = dimensions.width;
+          destCanvas.height = dimensions.height;
+          const dcx = destCanvas.getContext("2d")
+          if (isMirror) {
+            dcx.translate(videoEl.videoWidth, 0)
+            dcx.scale(-1, 1)
+          }
+          dcx.drawImage(
+            videoEl,
+              x,y,width,height,  // source rect with content to crop
+              0,0,width,height);      // newCanvas, same size as source rect
+          return destCanvas;
+        }
         if (videoEl.paused || videoEl.ended) return null
         let canvas = document.getElementById(canvasId)
         // let canvas = document.getElementById('custom-cam-video-canvas')
         canvas.width = videoEl.videoWidth;
         canvas.height = videoEl.videoHeight;
         let ctx = canvas.getContext('2d')
-        if (isMirror) {    
-          ctx.translate(videoEl.videoWidth, 0);
-          ctx.scale(-1, 1);
+        // if (isMirror) {    
+        //   ctx.translate(videoEl.videoWidth, 0);
+        //   ctx.scale(-1, 1);
+        // }
+        // ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight);
+        const lg = videoEl.videoWidth > videoEl.videoHeight ? videoEl.videoHeight : videoEl.videoWidth
+        const mglg = (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2)
+        const zz = {
+          x: ratio > 1 ? 0 : (videoEl.videoWidth/2) - (videoEl.videoHeight*(ratio)/2) ,
+          y: ratio > 1 ? (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2) : 0,
+          width: ratio > 1 ? videoEl.videoWidth : videoEl.videoHeight*(ratio),
+          height: ratio > 1 ? videoEl.videoWidth*(1/ratio) : videoEl.videoHeight
         }
-        ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight);
+        canvas = cropCanvas(zz);
+        ctx = canvas.getContext("2d"); 
         return canvas
       },
       toggleCamActive() {

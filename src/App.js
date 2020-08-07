@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect, useLayoutEffect } from 'react';
 import './App.css';
 import CustomCam from './CustomCam';
 
@@ -13,8 +13,11 @@ function App() {
     currentIndex: 0,
     list: [],
   });
-  const getCamData = useCallback((a) => {setCamData(a); console.log(a)}, [setCamData]) 
+  const getCamData = useCallback((a) => {setCamData(a); console.log(a)}, [setCamData])
+  const [dimensions, setDimensions] = useState({ width:0, height: 0 });
+  const mainComponentRef = useRef();
   const CustomCamRef = useRef();
+  
 
   const toggleActive = () => {
     CustomCamRef.current.toggleCamActive()
@@ -36,10 +39,26 @@ function App() {
   //   image.onload = () => ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   //   image.src = result.base64
   // }
+
   const handleCaptureCanvas = () => {
-    let result = CustomCamRef.current.getCanvas("canvas-div")
+    let result = CustomCamRef.current.getCanvas("canvas-div", {width: mainComponentRef.current.offsetWidth, height: mainComponentRef.current.offsetHeight})
     console.log(result)
   }
+
+  // const handleCaptureCanvas = useCallback(()  => {
+  //   // setText(ev.target.value);
+  //   let result = CustomCamRef.current.getCanvas("canvas-div", {width: mainComponentRef.current.offsetWidth, height: mainComponentRef.current.offsetHeight})
+  //   console.log(result)
+  // }, []);
+
+  useLayoutEffect(() => {
+    if (mainComponentRef.current) {
+      setDimensions({
+        width: mainComponentRef.current.offsetWidth,
+        height: mainComponentRef.current.offsetHeight
+      });
+    }
+  }, []);
 
   useEffect(()=> {
     console.log(navigator)
@@ -112,7 +131,7 @@ function App() {
   }
 
   return (
-    <div id='App'>
+    <div id='App' ref={mainComponentRef}>
       <div className='options-div'>
         <button onClick={() => toggleActive()}>{ isActive ? 'Play' : 'Pause' }</button>
         <button onClick={() => handleCaptureCanvas()} disabled={isActive}>Capture</button>
@@ -126,13 +145,12 @@ function App() {
           </select>
       </div>
       <div className='info-div'>
+
+        <div>Size : {`W: ${dimensions.width} H: ${dimensions.height}`}</div>
         <div>Platform : {getInfoClient('platform')}</div>
         <div>Browser : {getInfoClient('browser')}</div>
       </div>
-      <div>
-          {/* <select value={camData.currentIndex} onChange={(e) => setCamData({currentIndex: Number(e.target.value), list: camData.list})}> */}         
-        </div>
-        {checkAvailable() ? Camera() : NotCamera()}      
+      {checkAvailable() ? Camera() : NotCamera()}      
       <canvas className='canvas-div' id='canvas-div'/>
       {/* <img className='img-div' src={getImage} alt=""/> */}
     </div>
