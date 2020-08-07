@@ -84,13 +84,6 @@ const CustomCamera = forwardRef(
         canvas.width = videoEl.videoWidth;
         canvas.height = videoEl.videoHeight;
         let ctx = canvas.getContext('2d')
-        // if (isMirror) {    
-        //   ctx.translate(videoEl.videoWidth, 0);
-        //   ctx.scale(-1, 1);
-        // }
-        // ctx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight);
-        const lg = videoEl.videoWidth > videoEl.videoHeight ? videoEl.videoHeight : videoEl.videoWidth
-        const mglg = (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2)
         const zz = {
           x: ratio > 1 ? 0 : (videoEl.videoWidth/2) - (videoEl.videoHeight*(ratio)/2) ,
           y: ratio > 1 ? (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2) : 0,
