@@ -58,15 +58,15 @@ const CustomCamera = forwardRef(
         return { base64, size: [videoEl.videoWidth, videoEl.videoHeight] }
       },
       getCanvas(canvasId, dimensions) {
-        // const { width, height } = dimen
-        console.log(`dimensions ${dimensions.width} ${dimensions.height}`)
         const ratio = dimensions.width/dimensions.height
         let videoEl = document.getElementById('inputVideo')
+        // let videoElRatio = videoEl.videoWidth/videoEl.videoHeight
         let cropCanvas = ({ x, y, width, height }) => {
-          console.log(x, y, width, height)
           let destCanvas = document.getElementById(canvasId)
-          destCanvas.width = dimensions.width;
-          destCanvas.height = dimensions.height;
+          console.log('main',dimensions.width, dimensions.height, dimensions.width/dimensions.height)
+          console.log('after',width, height, width/height)
+          destCanvas.width = width;
+          destCanvas.height = height;
           const dcx = destCanvas.getContext("2d")
           if (isMirror) {
             dcx.translate(videoEl.videoWidth, 0)
@@ -81,18 +81,26 @@ const CustomCamera = forwardRef(
         if (videoEl.paused || videoEl.ended) return null
         let canvas = document.getElementById(canvasId)
         // let canvas = document.getElementById('custom-cam-video-canvas')
+        console.log(`videoEl ${videoEl.videoWidth} ${videoEl.videoHeight}`)
         canvas.width = videoEl.videoWidth;
         canvas.height = videoEl.videoHeight;
         let ctx = canvas.getContext('2d')
+        console.log(ratio)
+        const xg = (videoEl.videoWidth/2) - (videoEl.videoHeight*(ratio)/2)
+        const yg = (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2)
+        const hr = videoEl.videoHeight*(ratio)
+        const wrr = videoEl.videoWidth*(1/ratio)
+        // const wj = videoElRatio > 1 ? videoEl.videoWidth : videoEl.videoHeight
+        // const hj = videoElRatio > 1 ? videoEl.videoHeight : videoEl.videoWidth
         const zz = {
-          x: ratio > 1 ? 0 : (videoEl.videoWidth/2) - (videoEl.videoHeight*(ratio)/2) ,
-          y: ratio > 1 ? (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2) : 0,
-          width: ratio > 1 ? videoEl.videoWidth : videoEl.videoHeight*(ratio),
-          height: ratio > 1 ? videoEl.videoWidth*(1/ratio) : videoEl.videoHeight
+          x: ratio > 1 ? xg : 0 ,
+          y: ratio > 1 ? 0 : yg,
+          width: ratio > 1 ? hr : videoEl.videoWidth,
+          height: ratio > 1 ? videoEl.videoHeight : wrr,
         }
         canvas = cropCanvas(zz);
         ctx = canvas.getContext("2d"); 
-        return canvas
+        return ctx
       },
       toggleCamActive() {
         let videoEl = document.getElementById('inputVideo')
@@ -132,6 +140,7 @@ const CustomCamera = forwardRef(
       const launchVideo = async () => {
         const video = document.getElementById('inputVideo');
         let videoV = document.getElementById('custom-cam-video-container');
+        console.log(`videoV ${videoV?.clientWidth} ${videoV?.clientHeight}`)
         if (height && width) {
           // for mobile
           if (height > width) video.style.cssText = `width: auto !important`
@@ -146,8 +155,10 @@ const CustomCamera = forwardRef(
           const constraints = {
             audio: false,
             video: {
-              width: { min: 1024, ideal: videoV?.clientWidth, max: 1920 },
-              height: { min: 576, ideal: videoV?.clientHeight, max: 1080 },
+              width: { min: 1280, ideal: videoV?.clientWidth, max: 1920 },
+              height: { min: 720, ideal: videoV?.clientHeight, max: 1080 },
+              // width: { ideal: 1920 },
+              // height: { ideal: 1080 } 
             }
           }
           navigator.mediaDevices.getUserMedia(constraints).then(async (stream) => {
