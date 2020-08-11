@@ -58,47 +58,42 @@ const CustomCamera = forwardRef(
         return { base64, size: [videoEl.videoWidth, videoEl.videoHeight] }
       },
       getCanvas(canvasId, dimensions) {
-        const ratio = dimensions.width/dimensions.height
+        const { width: ws, height: hs } = dimensions
+        const rs = ws/hs
         let videoEl = document.getElementById('inputVideo')
-        // let videoElRatio = videoEl.videoWidth/videoEl.videoHeight
+        const { videoWidth: wc, videoHeight: hc } = videoEl
+        const rc = wc/hc
         let cropCanvas = ({ x, y, width, height }) => {
           let destCanvas = document.getElementById(canvasId)
-          console.log('main',dimensions.width, dimensions.height, dimensions.width/dimensions.height)
-          console.log('after',width, height, width/height)
           destCanvas.width = width;
           destCanvas.height = height;
           const dcx = destCanvas.getContext("2d")
           if (isMirror) {
-            dcx.translate(videoEl.videoWidth, 0)
+            dcx.translate(wc, 0)
             dcx.scale(-1, 1)
           }
           dcx.drawImage(
             videoEl,
               x,y,width,height,  // source rect with content to crop
-              0,0,width,height);      // newCanvas, same size as source rect
+              0,0,width,height); // newCanvas, same size as source rect
           return destCanvas;
         }
         if (videoEl.paused || videoEl.ended) return null
         let canvas = document.getElementById(canvasId)
-        // let canvas = document.getElementById('custom-cam-video-canvas')
-        console.log(`videoEl ${videoEl.videoWidth} ${videoEl.videoHeight}`)
-        canvas.width = videoEl.videoWidth;
-        canvas.height = videoEl.videoHeight;
+        canvas.width = wc;
+        canvas.height = hc;
         let ctx = canvas.getContext('2d')
-        console.log(ratio)
-        const xg = (videoEl.videoWidth/2) - (videoEl.videoHeight*(ratio)/2)
-        const yg = (videoEl.videoHeight/2) - (videoEl.videoWidth*(1/ratio)/2)
-        const hr = videoEl.videoHeight*(ratio)
-        const wrr = videoEl.videoWidth*(1/ratio)
-        // const wj = videoElRatio > 1 ? videoEl.videoWidth : videoEl.videoHeight
-        // const hj = videoElRatio > 1 ? videoEl.videoHeight : videoEl.videoWidth
-        const zz = {
-          x: ratio > 1 ? xg : 0 ,
-          y: ratio > 1 ? 0 : yg,
-          width: ratio > 1 ? hr : videoEl.videoWidth,
-          height: ratio > 1 ? videoEl.videoHeight : wrr,
-        }
-        canvas = cropCanvas(zz);
+        let wo, ho, xo, yo
+        wo = rc > 1 ? hc*rs : wc
+        ho = rc > 1 ? hc : wc/rs
+        xo = rc > 1 ? (wc - wo)/2 : 0
+        yo = rc > 1 ? 0 : (hc - ho)/2
+        canvas = cropCanvas({
+          x: xo,
+          y: yo,
+          width: wo,
+          height: ho,
+        });
         ctx = canvas.getContext("2d"); 
         return ctx
       },
