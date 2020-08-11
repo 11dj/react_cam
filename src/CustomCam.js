@@ -64,12 +64,13 @@ const CustomCamera = forwardRef(
         const { videoWidth: wc, videoHeight: hc } = videoEl
         const rc = wc/hc
         let cropCanvas = ({ x, y, width, height }) => {
+          console.log(x, y, width, height)
           let destCanvas = document.getElementById(canvasId)
           destCanvas.width = width;
           destCanvas.height = height;
           const dcx = destCanvas.getContext("2d")
           if (isMirror) {
-            dcx.translate(wc, 0)
+            dcx.translate(width, 0)
             dcx.scale(-1, 1)
           }
           dcx.drawImage(
@@ -80,14 +81,45 @@ const CustomCamera = forwardRef(
         }
         if (videoEl.paused || videoEl.ended) return null
         let canvas = document.getElementById(canvasId)
-        canvas.width = wc;
-        canvas.height = hc;
+        canvas.width = ws;
+        canvas.height = hs;
         let ctx = canvas.getContext('2d')
-        let wo, ho, xo, yo
-        wo = rc > 1 ? hc*rs : wc
-        ho = rc > 1 ? hc : wc/rs
-        xo = rc > 1 ? (wc - wo)/2 : 0
-        yo = rc > 1 ? 0 : (hc - ho)/2
+        let wo, ho
+        let xo = 0
+        let yo = 0
+        console.log('rs', ws, hs)
+        console.log('rc', wc, hc)
+        console.log(rs,rc)
+        if (rs > rc) {
+          if (rs>1 && rc>1) {
+            wo = wc
+            ho = wc/rs
+            yo=(hc-ho)/2
+          } else if (rs>1 && rc<1) {
+            wo = wc
+            ho = wc/rs
+            yo=(hc-ho)/2
+          } else if (rs<1 && rc<1) {
+            wo = wc
+            ho = wc*rs
+            yo=(hc-ho)/2
+          }
+        } else if (rs < rc) {
+          if ((rs>1 && rc>1) || (rs<1 && rc>1)) {
+            /// (rs<1 && rc>1) ยังไม่ได้ทดสอบ
+            console.log((rs>1 && rc>1))
+            console.log((rs<1 && rc>1))
+            wo = hc*rs
+            ho = hc
+          } else if (rs<1&&rc<1) {
+            console.log(`(rs<1&&rc<1)`)
+            wo = hc*rs
+            ho = hc
+          }
+          xo=(wc-wo)/2
+        } else {
+          wo = ho = hc
+        }
         canvas = cropCanvas({
           x: xo,
           y: yo,

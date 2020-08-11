@@ -41,8 +41,8 @@ function App() {
   // }
 
   const handleCaptureCanvas = () => {
-    let result = CustomCamRef.current.getCanvas("canvas-div", {width: mainComponentRef.current.offsetWidth, height: mainComponentRef.current.offsetHeight})
-    console.log(result)
+    CustomCamRef.current.getCanvas("canvas-div", {width: mainComponentRef.current.offsetWidth, height: mainComponentRef.current.offsetHeight})
+    // console.log(result)
   }
 
   // const handleCaptureCanvas = useCallback(()  => {
