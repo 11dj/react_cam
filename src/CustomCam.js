@@ -5,7 +5,7 @@ const useStyles = makeStyles(() => ({
   root: {
     position: 'relative',
     height: '100%',
-    width: 'auto'
+    width: '100%'
   },
   container: {
     position: 'absolute',
@@ -18,8 +18,8 @@ const useStyles = makeStyles(() => ({
   video: {
     minWidth: '100%',
     minHeight: '100%',
-    width: '100%',
-    height: '100%',
+    // width: '100%',
+    // height: '100%',
     position: 'absolute',
     top: '50%',
     left: '50%',
